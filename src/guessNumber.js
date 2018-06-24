@@ -20,7 +20,7 @@ var mainLayer = cc.Layer.extend({
         var framCatch = cc.spriteFrameCache;
         framCatch.addSpriteFrames(res.number_plist, res.number_png);
 
-        var n0 = new cc.Sprite("#number1.png");
+        var n0 = new cc.Sprite("#number0.png");
         n0.x = cc.winSize.width / 2;
         n0.y = cc.winSize.height / 2;
         this.addChild(n0);
