@@ -12,7 +12,7 @@ var mainLayer = cc.Layer.extend({
         this.addChild(title, 0, "mytitle");
 
         this.initLayout();
-        this.scheduleUpdate();  //update()
+        this.scheduleUpdate();  //只會跑update()，而且update·不可改其他名字
         return true;
     },
 
