@@ -1,36 +1,36 @@
-var mainLayer = cc.Layer.extend({
+let guess02Layer = cc.Layer.extend({
     sprite: null,
     nums: new Array(10),
     rects: new Array(10),
-    back: null,
     enter: null,
+    back: null,
     input: null,
     mesg: null,
+    backRect: null,
+    enterRect: null,
     guess: "",
+    playerGuess:"",
     dx: 4,
     ctor: function () {
-        this._super();
 
-        var title = new cc.LabelTTF("猜數字遊戲", "", 48);
+        this._super();
+        let title = new cc.LabelTTF("Guess Number", "", 48);
         title.x = cc.winSize.width / 2;
         title.y = cc.winSize.height * 7 / 8;
         title.setColor(cc.color(255, 255, 0));
         this.addChild(title, 0, "mytitle");
 
-        this.initLayout();
 
+        this.init();
         this.setUpmymouse(this);
-        this.scheduleUpdate();  // update()
-
+        this.scheduleUpdate();
         return true;
     },
-
-    initLayout: function () {
-        var frameCache = cc.spriteFrameCache;
+    init: function () {
+        let frameCache = cc.spriteFrameCache;
         frameCache.addSpriteFrames(res.number_plist, res.number_png);
 
-        // number key
-        var px, py;
+        let px, py;
         for (i = 0; i < this.nums.length; i++) {
             this.nums[i] = new cc.Sprite("#number" + i + ".png");
 
@@ -52,19 +52,30 @@ var mainLayer = cc.Layer.extend({
                 this.nums[i].height
             );
 
+
             this.addChild(this.nums[i]);
         }
-
-        // enter key
-        this.enter = new cc.Sprite(res.enter_png);
+        //enter
+        this.enter = new cc.Sprite(res.enter2_png);
         this.enter.x = cc.winSize.width * 4 / 6;
         this.enter.y = cc.winSize.height / 8;
+        this.enterRect = new cc.Rect(
+            this.enter.x - (this.enter.width / 2),
+            this.enter.y - (this.enter.height / 2),
+            this.enter.width,
+            this.enter.height
+        );
         this.addChild(this.enter);
-
-        // back key
-        this.back = new cc.Sprite(res.back_png);
+        //back
+        this.back = new cc.Sprite(res.back2_png);
         this.back.x = cc.winSize.width * 2 / 6;
         this.back.y = cc.winSize.height / 8;
+        this.backRect = new cc.Rect(
+            this.back.x - (this.back.width / 2),
+            this.back.y - (this.back.height / 2),
+            this.back.width,
+            this.back.height
+        );
         this.addChild(this.back);
         //input
         this.input = new cc.LabelTTF("", "", 48);
@@ -79,17 +90,16 @@ var mainLayer = cc.Layer.extend({
 
 
     },
-
     setUpmymouse: function (layer) {
         if ('mouse' in cc.sys.capabilities) {
 
 
-            var mouseListener = {
+            let mouseListener = {
                 event: cc.EventListener.MOUSE,
                 onMouseDown: function (event) {
-                    var x = event.getLocationX();
-                    var y = event.getLocationY();
-                    var point = new cc.Point(x, y);
+                    let x = event.getLocationX();
+                    let y = event.getLocationY();
+                    let point = new cc.Point(x, y);
 
                     for (i = 0; i < layer.rects.length; i++) {
                         if (cc.rectContainsPoint(layer.rects[i], point)) {
@@ -99,27 +109,42 @@ var mainLayer = cc.Layer.extend({
                             break;
                         }
                     }
+                    if (layer.guess.length > 0) {
+                        if (cc.rectContainsPoint(layer.backRect, point)) {
+                            layer.guess = layer.guess.slice(0, layer.guess.length - 1);
+                            layer.input.setString(layer.guess);
+                        }
+                    }
+
+                    if (layer.guess.length === 3) {
+                        if (cc.rectContainsPoint(layer.enterRect, point)) {
+                            layer.playerGuess = layer.guess;
+                            // layer.getChildByName("mttitle").setString(layer.playerGuess);
+                            console.log(layer.playerGuess);
+                            layer.guess = "";
+                            layer.input.setString(layer.guess);
+                        }
+                    }
                 }
             };
             cc.eventManager.addListener(mouseListener, this);
         }
     },
-
     update: function () {
-        var title = this.getChildByName("mytitle");
+        let title = this.getChildByName("mytitle");
         if (title.x + title.width / 2 >= cc.winSize.width ||
             title.x - title.width / 2 <= 0) {
             this.dx *= -1;
         }
+
         title.x += this.dx;
     }
-
 });
 
-var mainScene = cc.Scene.extend({
+let guess02Scene = cc.Scene.extend({
     onEnter: function () {
         this._super();
-        var layer = new mainLayer();
+        let layer = new guess02Layer();
         this.addChild(layer);
     }
 });
