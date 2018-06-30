@@ -196,3 +196,7 @@ function shuffle(a){
     }
     return a;
 }
+
+function checkAB(a,g){
+    
+}
