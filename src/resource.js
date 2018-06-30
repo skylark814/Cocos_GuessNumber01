@@ -33,7 +33,9 @@ var res = {
     back2_png:"res/back2.png",
     car1_png:"res/car1.png",
     car2_png:"res/car2.png",
-    track_png:"res/track.png"
+    track_png:"res/track.png",
+    winner_png:"res/winner.png",
+    loser_png:"res/loser.png"
 
 };
 

@@ -10,7 +10,11 @@ var guess02Layer = cc.Layer.extend({
     mesg: null,
     guess: "",
     dx : 4,
+    counter:0,
     answer: createAnswer(3),
+    winner:null,
+    loser:null,
+    isRun:true,
     ctor:function () {
         this._super();
 
@@ -21,6 +25,7 @@ var guess02Layer = cc.Layer.extend({
         this.addChild(title,0,"mytitle");
 
         this.initLayout();
+        this.initGame();
         this.setUpmymouse(this);
 
         this.scheduleUpdate();  // update()
@@ -93,7 +98,28 @@ var guess02Layer = cc.Layer.extend({
         this.mesg.y = cc.winSize.height * 5 / 8;
         this.addChild(this.mesg);
 
+        this.winner = new cc.Sprite(res.winner_png);
+        this.winner.x = cc.winSize.width / 2;
+        this.winner.y = cc.winSize.height/ 2;
+        this.addChild(this.winner);
 
+        this.loser = new cc.Sprite(res.loser_png);
+        this.loser.x = cc.winSize.width / 2;
+        this.loser.y = cc.winSize.height/ 2;
+        this.addChild(this.loser);
+
+
+    },
+
+    initGame(){
+        this.isRun = true;
+        this.counter=0;
+        this.answer=createAnswer(3);
+        this.winner.setVisible(false);
+        this.loser.setVisible(false);
+        this.guess = '';
+        this.input.setString('');
+        this.mesg.setString('');
     },
 
     setUpmymouse: function(layer){
@@ -105,6 +131,13 @@ var guess02Layer = cc.Layer.extend({
                     var x = event.getLocationX();
                     var y = event.getLocationY();
                     var point = new cc.Point(x,y);
+
+                    if (!layer.isRun){
+                        // 開新局
+                        layer.initGame();
+                        return;
+                    }
+
 
                     if (layer.guess.length>0){
                         // back
@@ -120,7 +153,25 @@ var guess02Layer = cc.Layer.extend({
                     if (layer.guess.length == 3){
                         // enter
                         if (cc.rectContainsPoint(layer.enterRect, point)){
-                            cc.log("==> " + layer.guess);
+                            cc.log("a = " + layer.answer);
+                            layer.counter++;
+                            var result = checkAB(layer.answer, layer.guess);
+                            layer.guess = '';
+
+                            if (result === '3A0B'){
+                                // winner
+                                //layer.mesg.setString("WINNER");
+                                layer.winner.setVisible(true);
+                                layer.isRun = false;
+                            }else if (layer.counter === 10){
+                                // loser
+                                layer.mesg.setString("Loser:" + layer.answer);
+                                layer.loser.setVisible(true);
+                                layer.isRun = false;
+                            }else{
+                                layer.mesg.setString(result);
+                            }
+
                         }
                     }else{
                         // number
@@ -196,7 +247,14 @@ function shuffle(a){
     }
     return a;
 }
-
-function checkAB(a,g){
-    
+function checkAB(ans,guess){
+    var a, b; a = b = 0;
+    for (var i=0; i<guess.length; i++){
+        if (ans.charAt(i) == guess.charAt(i)){
+            a++;
+        }else if (ans.indexOf(guess.charAt(i)) !== -1){
+            b++;
+        }
+    }
+    return a +'A' + b + 'B';
 }
