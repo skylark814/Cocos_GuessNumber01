@@ -9,8 +9,10 @@ let guess02Layer = cc.Layer.extend({
     backRect: null,
     enterRect: null,
     guess: "",
-    playerGuess:"",
+    playerGuess: "",
+    answer: null,
     dx: 4,
+    answer: createAnswer(3),
     ctor: function () {
 
         this._super();
@@ -101,30 +103,35 @@ let guess02Layer = cc.Layer.extend({
                     let y = event.getLocationY();
                     let point = new cc.Point(x, y);
 
-                    for (i = 0; i < layer.rects.length; i++) {
-                        if (cc.rectContainsPoint(layer.rects[i], point)) {
-                            console.log("press " + i);
-                            layer.guess += i;
-                            layer.input.setString(layer.guess);
-                            break;
-                        }
-                    }
+
                     if (layer.guess.length > 0) {
                         if (cc.rectContainsPoint(layer.backRect, point)) {
-                            layer.guess = layer.guess.slice(0, layer.guess.length - 1);
+                            layer.guess = layer.guess.substr(0, layer.guess.length - 1);
                             layer.input.setString(layer.guess);
+                            return;
                         }
+
                     }
 
                     if (layer.guess.length === 3) {
                         if (cc.rectContainsPoint(layer.enterRect, point)) {
-                            layer.playerGuess = layer.guess;
-                            // layer.getChildByName("mttitle").setString(layer.playerGuess);
-                            console.log(layer.playerGuess);
-                            layer.guess = "";
-                            layer.input.setString(layer.guess);
+                            cc.log("==> " + layer.guess);
+                            // layer.playerGuess = layer.guess;
+                            // console.log(layer.playerGuess);
+                            // layer.guess = "";
+                            // layer.input.setString(layer.guess);
                         }
                     }
+
+                        for (i = 0; i < layer.rects.length; i++) {
+                            if (cc.rectContainsPoint(layer.rects[i], point)) {
+                                console.log("press " + i);
+                                layer.guess += i;
+                                layer.input.setString(layer.guess);
+                                break;
+                            }
+                        }
+
                 }
             };
             cc.eventManager.addListener(mouseListener, this);
@@ -149,3 +156,25 @@ let guess02Scene = cc.Scene.extend({
     }
 });
 
+
+function createAnswer(d) {
+    var n = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
+    n = shuffle(n);
+    var r = '';
+    for (var i = 0; i < d; i++) {
+        r += n[i];
+    }
+    return r;
+}
+
+function shuffle(a) {
+    var i, j, x;
+
+    for (i = a.length; i; i--) {
+        j = parseInt(Math.random() * i);  // 0-9
+        x = a[i - 1];
+        a[i - 1] = a[j];
+        a[j] = x;
+    }
+    return a;
+}
